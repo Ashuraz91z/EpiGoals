@@ -8,3 +8,4 @@ let url = window.location.pathname;
 <Router {url}>
     <Route path="/" component={Home} />
 </Router>
+
