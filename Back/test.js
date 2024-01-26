@@ -1,13 +1,16 @@
 const express = require('express');
 const mysql = require('mysql');
 const router = express.Router();
+require('dotenv').config();
+const user = process.env.DB_USER;
+const password = process.env.DB_PASSWORD;
 
 // Créer une connexion à la base de données
 const connection = mysql.createConnection({
   host: 'localhost',
   port: '8889',
-  user: 'root', 
-  password: 'root',
+  user,
+  password,
   database: 'EpiGoals'
 });
 
