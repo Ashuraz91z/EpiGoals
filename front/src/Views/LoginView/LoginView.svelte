@@ -86,7 +86,6 @@
     width: 400px;
     padding: 20px;
     backdrop-filter: blur(1px);
-    /* Supprimez les styles de flex de cette classe car body les gère maintenant */
 }
 
 
