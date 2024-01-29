@@ -1,10 +1,11 @@
 <script>
 import {Router, Route } from 'svelte-routing';
-import Home from './Views/HomeView/HomeView.svelte';
-import Register from './Views/RegisterView/RegisterView.svelte';
-import Login from './Views/LoginView/LoginView.svelte';
-import NotFound from './Views/404NotFoundView/404NotFoundView.svelte';
-import AddMatch from './Views/AddMatchView/AddMatchView.svelte';
+import Home from './Views/Home/HomeView.svelte';
+import Register from './Views/Register/RegisterView.svelte';
+import Login from './Views/Login/LoginView.svelte';
+import NotFound from './Views/404NotFound/404NotFoundView.svelte';
+import AddMatch from './Views/AddMatch/AddMatchView.svelte';
+
 
 
 
