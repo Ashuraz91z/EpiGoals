@@ -2,8 +2,8 @@
     import { onMount } from 'svelte';
   
     let allPlayers = [];
-    let selectedTeamA = [null, null];
-    let selectedTeamB = [null, null];
+    let TeamA = [null, null];
+    let TeamB = [null, null];
     let scoreA = 0;
     let scoreB = 0;
   
@@ -13,21 +13,21 @@
     });
   
     function handleSubmit() {
-        console.log('Match ajouté:', selectedTeamA, selectedTeamB, scoreA, scoreB);
+        console.log('Match ajouté:', TeamA, TeamB, scoreA, scoreB);
     }
   
     function isPlayerSelected(player) {
-        return selectedTeamA.includes(player) || selectedTeamB.includes(player);
+        return TeamA.includes(player) || TeamB.includes(player);
     }
   </script>
   
   <form on:submit|preventDefault={handleSubmit}>
     <label>
         Équipe A - Joueur 1:
-        <select bind:value={selectedTeamA[0]}>
+        <select bind:value={TeamA[0]}>
             <option value={null}>-- Choisir un joueur --</option>
             {#each allPlayers as player}
-                {#if !isPlayerSelected(player) || player === selectedTeamA[0]}
+                {#if !isPlayerSelected(player) || player === TeamA[0]}
                     <option value={player}>{player}</option>
                 {/if}
             {/each}
@@ -36,10 +36,10 @@
   
     <label>
         Équipe A - Joueur 2:
-        <select bind:value={selectedTeamA[1]}>
+        <select bind:value={TeamA[1]}>
             <option value={null}>-- Choisir un joueur --</option>
             {#each allPlayers as player}
-                {#if !isPlayerSelected(player) || player === selectedTeamA[1]}
+                {#if !isPlayerSelected(player) || player === TeamA[1]}
                     <option value={player}>{player}</option>
                 {/if}
             {/each}
@@ -48,10 +48,10 @@
   
     <label>
         Équipe B - Joueur 1:
-        <select bind:value={selectedTeamB[0]}>
+        <select bind:value={TeamB[0]}>
             <option value={null}>-- Choisir un joueur --</option>
             {#each allPlayers as player}
-                {#if !isPlayerSelected(player) || player === selectedTeamB[0]}
+                {#if !isPlayerSelected(player) || player === TeamB[0]}
                     <option value={player}>{player}</option>
                 {/if}
             {/each}
@@ -60,10 +60,10 @@
   
     <label>
         Équipe B - Joueur 2:
-        <select bind:value={selectedTeamB[1]}>
+        <select bind:value={TeamB[1]}>
             <option value={null}>-- Choisir un joueur --</option>
             {#each allPlayers as player}
-                {#if !isPlayerSelected(player) || player === selectedTeamB[1]}
+                {#if !isPlayerSelected(player) || player === TeamB[1]}
                     <option value={player}>{player}</option>
                 {/if}
             {/each}
