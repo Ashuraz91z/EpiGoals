@@ -27,97 +27,25 @@
     }
 </script>
 
-
-<section>
-    <main class="centered-main">
-        <h1>Connectez Vous</h1>
-
+<section class="flex h-screen justify-center items-center">
+    <main class="bg-purple-200 p-10 rounded-lg shadow-lg max-w-md">
+        <h1 class="text-xl font-bold text-center mb-4">Connectez Vous</h1>
         {#if Message}
-            <p class="message" style="color: {textColor}">{Message}</p>
+            <p class={`text-center ${textColor}`}>{Message}</p>
         {/if}
-
-        <form on:submit|preventDefault={login}>
-            <label>
-                Nom d'utilisateur:
-                <input type="text" bind:value={username} />
-            </label>
-
-            <label>
-                Mot de passe:
-                <input type="password" bind:value={password} />
-            </label>
-
-            <button type="submit">Se connecter</button>
+        <form on:submit|preventDefault={login} class="space-y-4">
+            <div>
+                <label for="username" class="block mb-2">Nom d'utilisateur:</label>
+                <input type="text" bind:value={username} class="w-full p-2 border rounded"/>
+            </div>
+            <div>
+                <label for="password" class="block mb-2">Mot de passe:</label>
+                <input type="password" bind:value={password} class="w-full p-2 border rounded"/>
+            </div>
+            <button type="submit" class="w-full py-2 px-4 text-white rounded bg-custom-gradient">
+                Se connecter
+            </button>
         </form>
-        <p id="register">Vous n'êtes pas encore inscrit ? cliquez <a href="/register">ici</a></p>
+        <p class="mt-4 text-center">Vous n'êtes pas encore inscrit ? cliquez <a href="/register" class="text-blue-500 hover:underline">ici</a>.</p>
     </main>
 </section>
-
-
-<style>
-    @media (max-width: 600px) {
-        main {
-            max-width: 90%;
-        }
-    }
-
-    h1 {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-
-    section {
-        width: 100%;
-        height: 90vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    main {
-        border-radius: 15px;
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        backdrop-filter: blur(10px);
-    }
-
-    .centered-main {
-    background-color: rgba(255, 255, 255, 0.727);          
-    width: 400px;
-    padding: 20px;
-    backdrop-filter: blur(1px);
-}
-
-
-    label {
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    input {
-        width: 90%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background: linear-gradient(to right, violet, rgb(66, 66, 237));
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .message {
-        text-align: center;
-        margin-top: 0px;
-    }
-
-    #register {
-        margin-top: 2px;
-    }
-</style>

@@ -17,8 +17,10 @@
         .then((data) => {
             if (data.error) {
                 message = data.error;
+                colorText = 'text-red-500'; // Utilisation de Tailwind pour la couleur du texte
             } else {
                 message = 'Vous êtes inscrit !';
+                colorText = 'text-green-500'; // Utilisation de Tailwind pour la couleur du texte
                 window.location.href = '/login';
             }
         })
@@ -30,125 +32,54 @@
     function checkPassword() {
         if (password.length < 8) {
             message = 'Le mot de passe doit contenir au moins 8 caractères';
-            colorText = 'red';
-        } 
-        else return true;
+            colorText = 'text-red-500';
+        } else return true;
     }
+
     function checkUsername() {
         if (username.length < 3) {
             message = 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
-            colorText = 'red';
-        } 
-        else return true;
+            colorText = 'text-red-500';
+        } else return true;
     }
 
     function checkEmail() {
         if (email.length < 3) {
             message = 'L\'email doit contenir au moins 3 caractères';
-            colorText = 'red';
-        } 
-        else return true;
-
+            colorText = 'text-red-500';
+        } else return true;
     }
 
     function Verification() {
         if (checkUsername() && checkEmail() && checkPassword()) {
             register();
         }
-
     }
-
 </script>
 
-<section>
-    <main class="centered-main">
-        <h1>Inscrivez Vous</h1>
-
+<section class="flex h-screen justify-center items-center">
+    <main class="bg-purple-200 p-10 rounded-lg shadow-lg max-w-md">
+        <h1 class="text-xl font-bold text-center mb-4">Inscrivez Vous</h1>
         {#if message}
-            <p class="message" style="color: red">{message}</p>
+            <p class={`text-center ${colorText}`}>{message}</p>
         {/if}
-
-        <form on:submit|preventDefault={Verification}>
-            <label>
-                Nom d'utilisateur:
-                <input type="text" bind:value={username}  />
-            </label>
-            <label>
-                Email :
-                <input type="email" bind:value={email} />
-            </label>
-            <label>
-                Mot de passe:
-                <input type="password" bind:value={password} />
-            </label>
-
-            <button type="submit">Envoyer</button>
+        <form on:submit|preventDefault={Verification} class="space-y-4">
+            <div>
+                <label for="username" class="block mb-2">Nom d'utilisateur:</label>
+                <input type="text" bind:value={username} class="w-full p-2 border rounded"/>
+            </div>
+            <div>
+                <label for="email" class="block mb-2">Email :</label>
+                <input type="email" bind:value={email} class="w-full p-2 border rounded"/>
+            </div>
+            <div>
+                <label for="password" class="block mb-2">Mot de passe:</label>
+                <input type="password" bind:value={password} class="w-full p-2 border rounded"/>
+            </div>
+            <button type="submit" class="w-full py-2 px-4 text-white rounded bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
+                Envoyer
+            </button>
         </form>
-        <p id="register">Vous êtes déjà inscrit ? cliquez <a href="/login">ici</a></p>
+        <p class="mt-4 text-center">Vous êtes déjà inscrit ? cliquez <a href="/login" class="text-blue-500 hover:underline">ici</a>.</p>
     </main>
 </section>
-
-
-<style>
-
-    h1 {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-
-    section {
-        width: 100%;
-        height: 90vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    main {
-        border-radius: 15px;
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        backdrop-filter: blur(10px);
-    }
-
-    .centered-main {
-    background-color: rgba(255, 255, 255, 0.727);          
-    width: 400px;
-    padding: 20px;
-    backdrop-filter: blur(1px);
-    /* Supprimez les styles de flex de cette classe car body les gère maintenant */
-}
-
-
-    label {
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    input {
-        width: 90%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background: linear-gradient(to right, violet, rgb(66, 66, 237));
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .message {
-        text-align: center;
-        margin-top: 0px;
-    }
-
-    #register {
-        margin-top: 2px;
-    }
-</style>
