@@ -5,11 +5,11 @@ const mongoose = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const connect = require("./routes/connect");
+const user = require("./routes/user");
 
 app.use(express.json());
 
-app.use("/connect", connect);
+app.use("/user", user);
 
 app.get("/", (req, res) => {
   res.send("Serveur Express fonctionne !");
