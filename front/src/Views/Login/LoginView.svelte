@@ -22,7 +22,7 @@
         } else {
             const error = await response.json();
             Message = error.error;
-            textColor = 'red'
+            textColor = 'text-red-500'
         }
     }
 </script>

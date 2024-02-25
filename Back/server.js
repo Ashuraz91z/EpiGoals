@@ -1,19 +1,20 @@
-const express = require('express');
-const Test = require('./test.js');
-const User = require('./user/user.js');
+require("dotenv").config();
+
+const express = require("express");
+const mongoose = require("./db");
+
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
+const connect = require("./routes/connect");
 
+app.use(express.json());
 
+app.use("/connect", connect);
 
-app.get('/', (req , res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Serveur Express fonctionne !");
 });
 
-app.listen(port, () => {
-  console.log(`Serveur démarré sur http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
-app.use('/test', Test);
-app.use('/user', User);
-
-module.exports = app;
