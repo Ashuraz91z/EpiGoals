@@ -106,4 +106,36 @@ router.delete("/delete", verifyToken, async (req, res) => {
   }
 });
 
+router.put("/update", verifyToken, async (req, res) => {
+  const { oldPassword, newPassword, ...updateData } = req.body;
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).send("Utilisateur introuvable.");
+    }
+
+    if (newPassword && oldPassword) {
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).send("L'ancien mot de passe est incorrect.");
+      }
+      updateData.password = await bcrypt.hash(newPassword, 10);
+    } else if (newPassword) {
+      return res
+        .status(400)
+        .send("L'ancien mot de passe est requis pour changer de mot de passe.");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, updateData, {
+      new: true,
+    }).select("-password");
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erreur lors de la mise à jour de l'utilisateur.");
+  }
+});
+
 module.exports = router;
