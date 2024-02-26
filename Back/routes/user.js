@@ -3,9 +3,21 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const User = require("../schema/user");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
 require("dotenv").config();
 
 const app = express();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp-mail.outlook.com",
+  secureConnection: true,
+  port: 587,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 app.use(express.json());
 
@@ -45,6 +57,32 @@ router.get("/", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
+    if (!req.body.username || !req.body.email || !req.body.password) {
+      return res
+        .status(400)
+        .send(
+          "Veuillez fournir un nom d'utilisateur, un email et un mot de passe."
+        );
+    }
+
+    if (req.body.password.length < 4 || typeof req.body.password !== "string") {
+      return res
+        .status(400)
+        .send("Le mot de passe doit contenir au moins 6 caractères.");
+    }
+
+    if (req.body.username.length < 4 || typeof req.body.username !== "string") {
+      return res
+        .status(400)
+        .send("Le nom d'utilisateur doit contenir au moins 4 caractères.");
+    }
+
+    if (req.body.username.length > 20) {
+      return res
+        .status(400)
+        .send("Le nom d'utilisateur doit contenir moins de 20 caractères.");
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const user = new User({
@@ -57,6 +95,9 @@ router.post("/register", async (req, res) => {
 
     res.status(201).send({ userId: newUser._id });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).send("L'email ou le mot de passe existe déjà.");
+    }
     console.log(error);
     res.status(500).send("Erreur lors de la création de l'utilisateur.");
   }
@@ -135,6 +176,58 @@ router.put("/update", verifyToken, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send("Erreur lors de la mise à jour de l'utilisateur.");
+  }
+});
+
+router.post("/forgot-password", (req, res) => {
+  const { email } = req.body;
+
+  const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`; //url mot de passe oublié
+
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Réinitialisation de votre mot de passe",
+    html: `<p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien suivant : <a href="${resetURL}">${resetURL}</a></p>`,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res
+        .status(500)
+        .send({ message: "Erreur lors de l'envoi de l'email", error });
+    }
+    res
+      .status(200)
+      .send({ message: "Email de réinitialisation envoyé avec succès", info });
+  });
+});
+
+router.post("/reset-password", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    console.log(decoded);
+    console.log(decoded.email);
+
+    if (Date.now() <= decoded.exp * 1000) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await User.findOneAndUpdate(
+        { email: decoded.email },
+        { password: hashedPassword }
+      );
+      res.status(200).send("Mot de passe réinitialisé avec succès.");
+    } else {
+      res.status(401).send("Token expiré.");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Token invalide.");
   }
 });
 
