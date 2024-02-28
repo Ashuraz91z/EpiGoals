@@ -15,20 +15,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Epi: {
+  EPI: {
     type: Number,
+    default: 0,
   },
   MMR: {
     type: Number,
+    default: 0,
   },
   Victory: {
     type: Number,
+    default: 0,
   },
   Defeat: {
     type: Number,
+    default: 0,
   },
   Role: {
     type: String,
+    enum: ["user", "admin", "moderator"],
     default: "user",
   },
   createdAt: {
