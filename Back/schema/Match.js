@@ -16,7 +16,7 @@ const matchSchema = new mongoose.Schema({
   winner: {
     type: String,
     enum: ["equipe1", "equipe2"],
-    required: true,
+    required: false,
   },
   scoreEquipe1: {
     type: Number,
@@ -29,6 +29,10 @@ const matchSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+  },
+  estConfirmé: {
+    type: Boolean,
+    default: false,
   },
 });
 
