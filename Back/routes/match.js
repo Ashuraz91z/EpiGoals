@@ -15,44 +15,45 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.post("/pre-record-match", async (req, res) => {
-  const { equipe1, equipe2, scoreEquipe1, scoreEquipe2 } = req.body;
+// router.post("/pre-record-match", async (req, res) => {
+//   const { equipe1, equipe2, scoreEquipe1, scoreEquipe2 } = req.body;
+//   const io = require("socket.io")(server);
 
-  const equipe1Ids = await User.find({ username: { $in: equipe1 } }).select(
-    "_id"
-  );
-  const equipe2Ids = await User.find({ username: { $in: equipe2 } }).select(
-    "_id"
-  );
+//   const equipe1Ids = await User.find({ username: { $in: equipe1 } }).select(
+//     "_id"
+//   );
+//   const equipe2Ids = await User.find({ username: { $in: equipe2 } }).select(
+//     "_id"
+//   );
 
-  try {
-    const nouveauMatch = new Match({
-      equipe1: equipe1Ids.map((doc) => doc._id),
-      equipe2: equipe2Ids.map((doc) => doc._id),
-      scoreEquipe1,
-      scoreEquipe2,
-      // Ne pas définir `winner` ici puisque le match n'est pas encore confirmé
-    });
+//   try {
+//     const nouveauMatch = new Match({
+//       equipe1: equipe1Ids.map((doc) => doc._id),
+//       equipe2: equipe2Ids.map((doc) => doc._id),
+//       scoreEquipe1,
+//       scoreEquipe2,
+//       // Ne pas définir `winner` ici puisque le match n'est pas encore confirmé
+//     });
 
-    await nouveauMatch.save();
+//     await nouveauMatch.save();
 
-    // Envoyer une notification aux joueurs des deux équipes pour confirmer leur participation
-    io.emit("notification-match", {
-      message:
-        "Un nouveau match a été pré-enregistré. Veuillez confirmer votre participation.",
-      matchId: nouveauMatch._id,
-    });
+//     // Envoyer une notification aux joueurs des deux équipes pour confirmer leur participation
+//     io.emit("notification-match", {
+//       message:
+//         "Un nouveau match a été pré-enregistré. Veuillez confirmer votre participation.",
+//       matchId: nouveauMatch._id,
+//     });
 
-    res.status(201).json({
-      message:
-        "Match pré-enregistré avec succès. En attente de confirmation des joueurs.",
-      matchId: nouveauMatch._id,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erreur lors du pré-enregistrement du match.");
-  }
-});
+//     res.status(201).json({
+//       message:
+//         "Match pré-enregistré avec succès. En attente de confirmation des joueurs.",
+//       matchId: nouveauMatch._id,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Erreur lors du pré-enregistrement du match.");
+//   }
+// });
 
 // router.post("/record", async (req, res) => {
 //   try {
