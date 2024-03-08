@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../schema/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const Match = require("../schema/match");
 
 require("dotenv").config();
 
@@ -228,6 +229,53 @@ router.post("/reset-password", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).send("Token invalide.");
+  }
+});
+
+const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    return res.status(401).send("Token non fourni.");
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    if (err) {
+      // Vérifie si l'erreur est due à un token expiré
+      if (err.name === "TokenExpiredError") {
+        return res
+          .status(401)
+          .json({ message: "Token expiré. Veuillez vous reconnecter." });
+      }
+      // Pour les autres erreurs de vérification du token
+      return res.status(403).json({ message: "Token invalide." });
+    }
+
+    const authenticatedUser = await User.findById(user._id);
+    if (!authenticatedUser) {
+      return res.status(404).send("Utilisateur non trouvé.");
+    }
+
+    req.user = authenticatedUser;
+    next();
+  });
+};
+router.get("/notif", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const matchs = await Match.find({
+      $or: [{ equipe1: userId }, { equipe2: userId }],
+      estConfirmé: false,
+    })
+      .populate({ path: "equipe1", select: "username" })
+      .populate({ path: "equipe2", select: "username" });
+
+    res.json(matchs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des matchs.");
   }
 });
 

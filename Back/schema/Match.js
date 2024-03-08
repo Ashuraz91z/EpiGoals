@@ -30,10 +30,8 @@ const matchSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  estConfirmé: {
-    type: Boolean,
-    default: false,
-  },
+  confirmations: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  estConfirmé: { type: Boolean, default: false },
 });
 
 const Match = mongoose.model("Match", matchSchema);
