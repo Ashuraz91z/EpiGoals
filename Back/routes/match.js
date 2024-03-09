@@ -67,8 +67,6 @@ async function updateMatchStats(
     const MMREquipe2Moyen =
       equipe2Joueurs.reduce((acc, joueur) => acc + joueur.MMR, 0) /
       equipe2Joueurs.length;
-    console.log("MMREquipe1Moyen : ", MMREquipe1Moyen);
-    console.log("MMREquipe2Moyen : ", MMREquipe2Moyen);
 
     const calculerProbabiliteVictoire = (MMREquipeJoueur, MMREquipeAdverse) => {
       return (
@@ -112,7 +110,6 @@ async function updateMatchStats(
       }
 
       let EPIAjuste = Math.round(EPIJoueur + ajustement);
-      console.log("EPI ajusté : ", EPIAjuste);
 
       return EPIAjuste;
     };
@@ -122,15 +119,10 @@ async function updateMatchStats(
       estEquipe1Gagnante,
       equipeAdverseMMRMoyen
     ) => {
-      console.log(
-        "---------------------------------------------------------------------"
-      );
-      console.log("Joueur : ", joueur.username);
       const probaVictoire = calculerProbabiliteVictoire(
         joueur.MMR,
         equipeAdverseMMRMoyen
       );
-      console.log("probaVictoire : ", probaVictoire);
       joueur.MMR = calculerAjustementMMR(
         joueur.MMR,
         estEquipe1Gagnante,
@@ -138,13 +130,11 @@ async function updateMatchStats(
         scoreEquipe1,
         scoreEquipe2
       );
-      console.log("MMR ajusté : ", joueur.MMR);
       joueur.EPI = calculerAjustementEPI(
         joueur.EPI,
         joueur.MMR,
         estEquipe1Gagnante
       );
-      console.log("EPI ajusté : ", joueur.EPI);
       estEquipe1Gagnante ? joueur.Victory++ : joueur.Defeat++;
       await joueur.save();
     };
