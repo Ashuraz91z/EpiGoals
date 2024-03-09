@@ -50,108 +50,114 @@ router.post("/pre-record-match", async (req, res) => {
   }
 });
 
-// router.post("/record", async (req, res) => {
-//   try {
-//     const { equipe1, equipe2, scoreEquipe1, scoreEquipe2 } = req.body;
-
-//     // Recherche des joueurs par username dans les bases de données pour les équipes 1 et 2
-//     const equipe1Joueurs = await User.find({ username: { $in: equipe1 } });
-//     const equipe2Joueurs = await User.find({ username: { $in: equipe2 } });
-
-//     // Calcul du MMR moyen pour chaque équipe
-//     const MMRMoyenEquipe1 =
-//       equipe1Joueurs.reduce((acc, joueur) => acc + joueur.MMR, 0) /
-//       equipe1Joueurs.length;
-//     const MMRMoyenEquipe2 =
-//       equipe2Joueurs.reduce((acc, joueur) => acc + joueur.MMR, 0) /
-//       equipe2Joueurs.length;
-
-//     // Calcul de la probabilité de victoire pour chaque équipe
-//     let probaEquipe1 =
-//       1 / (1 + Math.pow(10, (MMRMoyenEquipe2 - MMRMoyenEquipe1) / 2000));
-//     let probaEquipe2 =
-//       1 / (1 + Math.pow(10, (MMRMoyenEquipe1 - MMRMoyenEquipe2) / 2000));
-
-//     // Détermination du gagnant et du perdant basée sur les scores
-//     let winner, loser;
-//     if (scoreEquipe1 > scoreEquipe2) {
-//       winner = equipe1;
-//       loser = equipe2;
-//     } else {
-//       winner = equipe2;
-//       loser = equipe1;
-//     }
-
-//     // Fonction pour ajuster l'EPI et le MMR
-//     const ajusterStats = (joueur, estGagnant, equipeAdverseMMRMoyen) => {
-//       const differenceMMR = joueur.MMR - equipeAdverseMMRMoyen;
-//       const baseEPIAjustement = estGagnant ? 20 : -20; // Base ajustement EPI
-//       const ajustementEPI =
-//         baseEPIAjustement * Math.exp(-Math.abs(differenceMMR) / 400); // Ajustement EPI exponentiel
-//       joueur.EPI += ajustementEPI;
-
-//       const MMRafter =
-//         joueur.MMR +
-//         (estGagnant ? 1 : -1) *
-//           50 *
-//           (1 + Math.abs(scoreEquipe1 - scoreEquipe2) * 0.05); // Simplification pour l'exemple
-//       joueur.MMR = MMRafter;
-
-//       if (estGagnant) {
-//         joueur.Victory += 1;
-//       } else {
-//         joueur.Defeat += 1;
-//       }
-
-//       return joueur.save();
-//     };
-
-//     // Ajuster les stats pour chaque joueur des deux équipes
-//     await Promise.all(
-//       equipe1Joueurs.map((joueur) =>
-//         ajusterStats(joueur, winner === equipe1, MMRMoyenEquipe2)
-//       )
-//     );
-//     await Promise.all(
-//       equipe2Joueurs.map((joueur) =>
-//         ajusterStats(joueur, winner === equipe2, MMRMoyenEquipe1)
-//       )
-//     );
-
-//     res.status(200).json("MMR et EPI ajustés.");
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       message: "Erreur lors de l'enregistrement du match.",
-//       error: error.message,
-//     });
-//   }
-// });
-
 async function updateMatchStats(
   matchId,
   equipe1Ids,
   equipe2Ids,
   scoreEquipe1,
-  scoreEquipe2
+  scoreEquipe2,
+  baseMMR = 30
 ) {
   try {
     const equipe1Joueurs = await User.find({ _id: { $in: equipe1Ids } });
     const equipe2Joueurs = await User.find({ _id: { $in: equipe2Ids } });
-    const estEquipe1Gagnante = scoreEquipe1 > scoreEquipe2;
+    const MMREquipe1Moyen =
+      equipe1Joueurs.reduce((acc, joueur) => acc + joueur.MMR, 0) /
+      equipe1Joueurs.length;
+    const MMREquipe2Moyen =
+      equipe2Joueurs.reduce((acc, joueur) => acc + joueur.MMR, 0) /
+      equipe2Joueurs.length;
+    console.log("MMREquipe1Moyen : ", MMREquipe1Moyen);
+    console.log("MMREquipe2Moyen : ", MMREquipe2Moyen);
 
-    const ajusterStats = async (joueur, estGagnant) => {
-      joueur.MMR += estGagnant ? 30 : -20; // a modifier en fonciton de la difference de MMR
-      joueur.EPI += estGagnant ? 15 : -10; // a modifier car reste inchnage si on gagne ou perd et exponentiel en fonction de la difference de MMR et de EPi
-      estGagnant ? joueur.Victory++ : joueur.Defeat++;
+    const calculerProbabiliteVictoire = (MMREquipeJoueur, MMREquipeAdverse) => {
+      return (
+        1 / (1 + Math.pow(10, (MMREquipeAdverse - MMREquipeJoueur) / 2000))
+      );
+    };
+
+    const calculerAjustementMMR = (
+      MMRJoueur,
+      estGagnant,
+      probaVictoire,
+      scoreEquipeJoueur,
+      scoreEquipeAdverse
+    ) => {
+      const resultatMatch = estGagnant ? 1 : 0; // 1 pour victoire, 0 pour défaite
+      const differenceScore = estGagnant
+        ? scoreEquipeJoueur - scoreEquipeAdverse
+        : scoreEquipeAdverse - scoreEquipeJoueur;
+      return Math.round(
+        MMRJoueur +
+          baseMMR *
+            2 *
+            (resultatMatch - probaVictoire) *
+            (1 + differenceScore * 0.05)
+      );
+    };
+
+    const calculerAjustementEPI = (EPIJoueur, MMRJoueur, estGagnant) => {
+      const baseEPI = 10;
+      const maxPerteEPI = 30;
+      const cibleEPI = MMRJoueur / 2;
+      const differenceEPI = cibleEPI - EPIJoueur;
+      let ajustement;
+
+      if (estGagnant) {
+        ajustement = baseEPI + 5 + Math.abs(differenceEPI) / 10;
+        ajustement = Math.min(ajustement, baseEPI * 3); //prend le plus petit
+      } else {
+        ajustement = -baseEPI - Math.abs(differenceEPI) / 20;
+        ajustement = Math.max(ajustement, -maxPerteEPI); //prend le plus grand
+      }
+
+      let EPIAjuste = Math.round(EPIJoueur + ajustement);
+      console.log("EPI ajusté : ", EPIAjuste);
+
+      return EPIAjuste;
+    };
+
+    const ajusterStats = async (
+      joueur,
+      estEquipe1Gagnante,
+      equipeAdverseMMRMoyen
+    ) => {
+      console.log(
+        "---------------------------------------------------------------------"
+      );
+      console.log("Joueur : ", joueur.username);
+      const probaVictoire = calculerProbabiliteVictoire(
+        joueur.MMR,
+        equipeAdverseMMRMoyen
+      );
+      console.log("probaVictoire : ", probaVictoire);
+      joueur.MMR = calculerAjustementMMR(
+        joueur.MMR,
+        estEquipe1Gagnante,
+        probaVictoire,
+        scoreEquipe1,
+        scoreEquipe2
+      );
+      console.log("MMR ajusté : ", joueur.MMR);
+      joueur.EPI = calculerAjustementEPI(
+        joueur.EPI,
+        joueur.MMR,
+        estEquipe1Gagnante
+      );
+      console.log("EPI ajusté : ", joueur.EPI);
+      estEquipe1Gagnante ? joueur.Victory++ : joueur.Defeat++;
       await joueur.save();
     };
 
     await Promise.all(
-      equipe1Joueurs.map((joueur) => ajusterStats(joueur, estEquipe1Gagnante))
+      equipe1Joueurs.map((joueur) =>
+        ajusterStats(joueur, scoreEquipe1 > scoreEquipe2, MMREquipe2Moyen)
+      )
     );
     await Promise.all(
-      equipe2Joueurs.map((joueur) => ajusterStats(joueur, !estEquipe1Gagnante))
+      equipe2Joueurs.map((joueur) =>
+        ajusterStats(joueur, scoreEquipe2 > scoreEquipe1, MMREquipe1Moyen)
+      )
     );
   } catch (error) {
     console.error(
