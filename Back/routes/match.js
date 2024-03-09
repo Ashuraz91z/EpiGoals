@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../schema/user");
 const Match = require("../schema/match");
 const app = express();
+const cron = require("node-cron");
 const mongoose = require("mongoose");
 app.use(express.json());
 require("dotenv").config();
@@ -215,6 +216,54 @@ router.post("/confirm/:matchId", authenticateToken, async (req, res) => {
     res.json({ message: "Confirmation enregistrée", match });
   } catch (error) {
     res.status(500).send("Erreur lors de la confirmation du match.");
+  }
+});
+
+const supprimerMatchsAnciens = async () => {
+  const lastweek = new Date();
+  lastweek.setDate(lastweek.getDate() - 7);
+
+  try {
+    const resultat = await Match.deleteMany({
+      date: { $lt: lastweek },
+    });
+
+    console.log("Matchs supprimés :", resultat.deletedCount);
+  } catch (error) {
+    console.error("Erreur lors de la suppression des matchs anciens :", error);
+  }
+};
+// supprimer Match ancien qui sont present depuis 7 jours
+cron.schedule("0 0 * * *", supprimerMatchsAnciens, {
+  scheduled: true,
+  timezone: "Europe/Paris",
+});
+
+router.get("/historique", authenticateToken, async (req, res) => {
+  const userId = req.user._id.toString();
+  try {
+    let matchs = await Match.find({
+      $or: [{ equipe1: userId }, { equipe2: userId }],
+      estConfirmé: true,
+    });
+
+    matchs = matchs.map((match) => {
+      const estEquipe1 = match.equipe1
+        .map((id) => id.toString())
+        .includes(userId);
+      const estEquipe2 = match.equipe2
+        .map((id) => id.toString())
+        .includes(userId);
+      const gagne =
+        (estEquipe1 && match.scoreEquipe1 > match.scoreEquipe2) ||
+        (estEquipe2 && match.scoreEquipe2 > match.scoreEquipe1);
+
+      return { ...match.toObject(), resultat: gagne };
+    });
+
+    res.json(matchs);
+  } catch (error) {
+    res.status(500).send("Erreur lors de la récupération de l'historique.");
   }
 });
 

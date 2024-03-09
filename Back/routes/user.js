@@ -69,7 +69,7 @@ router.post("/register", async (req, res) => {
     if (req.body.password.length < 4 || typeof req.body.password !== "string") {
       return res
         .status(400)
-        .send("Le mot de passe doit contenir au moins 6 caractères.");
+        .send("Le mot de passe doit contenir au moins 3 caractères.");
     }
 
     if (req.body.username.length < 4 || typeof req.body.username !== "string") {
