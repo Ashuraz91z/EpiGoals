@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  height: 100dvh;
+  width: 100dvw;
+  background-color: rgb(104, 104, 246);
+}
