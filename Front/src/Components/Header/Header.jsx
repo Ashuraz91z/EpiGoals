@@ -2,20 +2,21 @@ import React from "react";
 
 const Header = () => {
   return (
-    <nav className="flex bg-red-200">
-      <ul className="flex bg-blue-500 w-full justify-center gap-8">
-        <li>
-          <a href="/">Home</a>
-        </li>
-        <li>
-          <a href="/about">About</a>
-        </li>
-        <li>
-          <a href="/Sinscrire">Inscription</a>
-        </li>
-        <li>
-          <a href="/Login">Login</a>
-        </li>
+    <nav className="flex">
+      <ul className="flex w-full justify-between gap-8 bg-red-200">
+        <div className="flex align-center">
+          <li className="m-auto p-2">
+            <a href="/">Accueil</a>
+          </li>
+        </div>
+        <div className="flex gap-8 my-auto p-4">
+          <li>
+            <a href="/login">Se connecter</a>
+          </li>
+          <li>
+            <a href="/register">S'inscrire</a>
+          </li>
+        </div>
       </ul>
     </nav>
   );

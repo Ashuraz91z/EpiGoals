@@ -58,7 +58,12 @@ router.get("/", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    if (!req.body.username || !req.body.email || !req.body.password) {
+    if (
+      !req.body.username ||
+      !req.body.email ||
+      !req.body.password ||
+      !req.body.confirm
+    ) {
       return res
         .status(400)
         .send(
@@ -66,10 +71,10 @@ router.post("/register", async (req, res) => {
         );
     }
 
-    if (req.body.password.length < 4 || typeof req.body.password !== "string") {
+    if (req.body.password.length < 8 || typeof req.body.password !== "string") {
       return res
         .status(400)
-        .send("Le mot de passe doit contenir au moins 3 caractères.");
+        .send("Le mot de passe doit contenir au moins 8  caractères.");
     }
 
     if (req.body.username.length < 4 || typeof req.body.username !== "string") {
@@ -82,6 +87,16 @@ router.post("/register", async (req, res) => {
       return res
         .status(400)
         .send("Le nom d'utilisateur doit contenir moins de 20 caractères.");
+    }
+
+    if (req.body.password !== req.body.confirm) {
+      return res.status(400).send("Les mots de passe ne correspondent pas.");
+    }
+
+    if (req.body.check !== true) {
+      return res
+        .status(400)
+        .send("Vous devez accepter les conditions d'utilisation.");
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
