@@ -41,7 +41,9 @@ const Register = () => {
       }
       setMessage("Inscription réussie, vous pouvez vous connecter.");
       setMessageType("success");
-      window.location.href = "/login";
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 3000);
     } catch (error) {
       setMessage(error.message);
       setMessageType("error");
@@ -73,7 +75,7 @@ const Register = () => {
             name="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -90,7 +92,7 @@ const Register = () => {
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none bg-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -107,7 +109,7 @@ const Register = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow bg-white appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -124,20 +126,18 @@ const Register = () => {
             value={confirm}
             required
             onChange={(e) => setConfirm(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow bg-white appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="form-control mb-2">
-          <label className="label cursor-pointer flex gap-2">
+          <label className=" cursor-pointer flex gap-2">
             <input
               type="checkbox"
               checked={isChecked}
               onChange={handleCheckboxChange}
               className="checkbox checkbox-primary"
             />
-            <span className="label-text">
-              J'accepte les conditions d'utilisation
-            </span>
+            <span>J'accepte les conditions d'utilisation</span>
           </label>
         </div>
         <div className="flex-col flex">

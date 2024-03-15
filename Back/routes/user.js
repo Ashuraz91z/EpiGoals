@@ -1,10 +1,93 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
 const User = require("../schema/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Match = require("../schema/match");
+const multer = require("multer");
+const path = require("path");
+
+const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    return res.status(401).send("Token non fourni.");
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    if (err) {
+      // Vérifie si l'erreur est due à un token expiré
+      if (err.name === "TokenExpiredError") {
+        return res
+          .status(401)
+          .json({ message: "Token expiré. Veuillez vous reconnecter." });
+      }
+      // Pour les autres erreurs de vérification du token
+      return res.status(403).json({ message: "Token invalide." });
+    }
+
+    const authenticatedUser = await User.findById(user._id);
+    if (!authenticatedUser) {
+      return res.status(404).send("Utilisateur non trouvé.");
+    }
+
+    req.user = authenticatedUser;
+    next();
+  });
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    const fileName = req.user._id + path.extname(file.originalname);
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 }, // Limite la taille du fichier à 10MB (10,000,000 octets)
+  fileFilter: (req, file, cb) => {
+    if (!file.originalname.match(/\.(png)$/)) {
+      return cb(new Error("Veuillez télécharger un fichier PNG."), false);
+    }
+    cb(null, true);
+  },
+}).single("profilePicture");
+
+router.post("/profile-picture", authenticateToken, (req, res) => {
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(500).send({ error: err.message });
+    } else if (err) {
+      return res.status(500).send({ error: err.message });
+    }
+
+    // Vérifiez si le fichier existe déjà, et le cas échéant, remplacez-le
+    const filePath = path.join(__dirname, "uploads", req.file.originalname); // Assurez-vous que le chemin est correct
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (!err) {
+        // Le fichier existe, supprimez-le ou effectuez une autre action nécessaire avant de sauvegarder le nouveau fichier
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            return res.status(500).send({
+              error: "Problème lors de la suppression du fichier existant.",
+            });
+          }
+          // Le fichier a été supprimé, continuez avec votre logique
+          // Notez que dans ce cas, Multer a déjà sauvegardé le nouveau fichier, vous devrez donc adapter votre logique en fonction de vos besoins
+        });
+      }
+      // Fichier n'existe pas ou a été supprimé, continuez normalement
+      res.status(200).send("Photo de profil uploadée avec succès.");
+    });
+  });
+});
 
 require("dotenv").config();
 
@@ -100,10 +183,11 @@ router.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const email = req.body.email.toLowerCase();
 
     const user = new User({
       username: req.body.username,
-      email: req.body.email,
+      email,
       password: hashedPassword,
     });
 
@@ -121,7 +205,8 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const email = req.body.email.toLowerCase();
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).send("L'email n'existe pas.");
     }
@@ -196,7 +281,7 @@ router.put("/update", verifyToken, async (req, res) => {
 });
 
 router.post("/forgot-password", (req, res) => {
-  const { email } = req.body;
+  const email = req.body.email.toLowerCase();
 
   const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
     expiresIn: "1h",
@@ -228,9 +313,6 @@ router.post("/reset-password", async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log(decoded);
-    console.log(decoded.email);
-
     if (Date.now() <= decoded.exp * 1000) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await User.findOneAndUpdate(
@@ -247,35 +329,6 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) {
-    return res.status(401).send("Token non fourni.");
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
-    if (err) {
-      // Vérifie si l'erreur est due à un token expiré
-      if (err.name === "TokenExpiredError") {
-        return res
-          .status(401)
-          .json({ message: "Token expiré. Veuillez vous reconnecter." });
-      }
-      // Pour les autres erreurs de vérification du token
-      return res.status(403).json({ message: "Token invalide." });
-    }
-
-    const authenticatedUser = await User.findById(user._id);
-    if (!authenticatedUser) {
-      return res.status(404).send("Utilisateur non trouvé.");
-    }
-
-    req.user = authenticatedUser;
-    next();
-  });
-};
 router.get("/notif", authenticateToken, async (req, res) => {
   try {
     const userId = req.user._id;

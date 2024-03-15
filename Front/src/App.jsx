@@ -5,12 +5,18 @@ import NotFound from "./Components/NotFound/NotFound";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
 import Test from "./Components/test/test";
+import Header from "./Components/Header/Header";
+import Settings from "./Components/Settings/Settings";
+import Profil from "./Components/Settings/Profil";
 
 const App = () => {
   return (
     <div>
+      <Header />
       <Router>
         <Routes>
+          <Route path="/profil" element={<Profil />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/test" element={<Test />} />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
