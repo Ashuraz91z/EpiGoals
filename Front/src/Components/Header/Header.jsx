@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { VscAccount } from "react-icons/vsc";
 
 const Header = () => {
   const [profileIcon, setProfileIcon] = useState("");
@@ -14,6 +15,15 @@ const Header = () => {
         const userId = decodedToken._id;
         const profileIconUrl = `http://localhost:3000/uploads/${userId}.png`;
         setProfileIcon(profileIconUrl);
+        fetch(profileIconUrl)
+          .then((res) => {
+            if (res.ok) {
+              setProfileIcon(profileIconUrl);
+            } else {
+              setProfileIcon("");
+            }
+          })
+          .catch((err) => console.error(err));
         setIsLogged(true);
       } catch (err) {
         console.error(err);
@@ -22,8 +32,8 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="flex-col">
-      <div className="navbar bg-blue-700">
+    <div className="flex-col bg-gradient-to-r from-blue-700 to-purple-500 dark:bg-red-500">
+      <div className="navbar">
         <div className="flex-1">
           <a className="btn btn-ghost text-xl" href="/">
             EpiGoals
@@ -49,9 +59,11 @@ const Header = () => {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
-                  <img alt="Icône de profil" src={profileIcon} />
-                </div>
+                {profileIcon ? (
+                  <img src={profileIcon} alt="Icône de profil" />
+                ) : (
+                  <VscAccount size="40" />
+                )}
               </div>
               <ul
                 tabIndex={0}
@@ -100,23 +112,33 @@ const Header = () => {
           )}
         </div>
       </div>
-      <div className="p-2">
-        <ul className="flex gap-6 p-2 bg-white justify-center m-auto rounded-md h-12 items-center w-max">
-          <li>
-            <a href="/match" className="hover:drop-shadow hover:text-black">
-              Match
-            </a>
-          </li>
-          <li className="hover:drop-shadow hover:text-black ">
-            <a href="/notifications">Notifications</a>
-          </li>
-          <li>
-            <a href="/test" className="hover:text-black hover:drop-shadow">
-              Carrière
-            </a>
-          </li>
-        </ul>
-      </div>
+      {isLogged && (
+        <div className="p-2">
+          <ul className="flex gap-2 p-2  bg-white justify-center m-auto rounded-md h-12 items-center w-max">
+            <li className="hover:drop-shadow hover:text-black w-24">
+              <a
+                className="flex items-center justify-center"
+                href="/classement"
+              >
+                Classement
+              </a>
+            </li>
+            <li className="w-24 hover:drop-shadow hover:text-black">
+              <a href="/match" className="flex items-center justify-center">
+                Match
+              </a>
+            </li>
+            <li className="hover:text-black hover:drop-shadow w-24">
+              <a
+                href="/notifications"
+                className="flex items-center justify-center"
+              >
+                Notifications
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
