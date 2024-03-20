@@ -13,26 +13,30 @@ const Header = () => {
       try {
         const decodedToken = jwtDecode(token);
         const userId = decodedToken._id;
+        const Expire = decodedToken.exp;
+        if (Date.now() >= Expire * 1000) {
+          Cookies.remove("token");
+          setIsLogged(false);
+          return;
+        }
         const profileIconUrl = `http://localhost:3000/uploads/${userId}.png`;
         setProfileIcon(profileIconUrl);
-        fetch(profileIconUrl)
-          .then((res) => {
-            if (res.ok) {
-              setProfileIcon(profileIconUrl);
-            } else {
-              setProfileIcon("");
-            }
-          })
-          .catch((err) => console.error(err));
+        fetch(profileIconUrl).then((res) => {
+          if (res.ok) {
+            setProfileIcon(profileIconUrl);
+          } else {
+            setProfileIcon("");
+          }
+        });
         setIsLogged(true);
       } catch (err) {
-        console.error(err);
+        console.log(err);
       }
     }
   }, []);
 
   return (
-    <div className="flex-col bg-gradient-to-r from-blue-700 to-purple-500 dark:bg-red-500">
+    <div className="flex-col">
       <div className="navbar">
         <div className="flex-1">
           <a className="btn btn-ghost text-xl" href="/">
