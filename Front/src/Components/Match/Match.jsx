@@ -1,38 +1,138 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosAdd } from "react-icons/io";
+import Cookies from "js-cookie";
 
 function Match_historique(props) {
+  const [joueursEquipe1, setJoueursEquipe1] = useState([]);
+  const [joueursEquipe2, setJoueursEquipe2] = useState([]);
+
+  useEffect(() => {
+    async function fetchJoueurs() {
+      try {
+        const token = Cookies.get("token");
+
+        // Récupération des noms d'utilisateur pour les joueurs de l'équipe 1
+        const equipe1Promises = props.equipe1.map(async (joueurId) => {
+          const response = await fetch(
+            `http://localhost:3000/user/username/${joueurId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          return data.username;
+        });
+
+        // Récupération des noms d'utilisateur pour les joueurs de l'équipe 2
+        const equipe2Promises = props.equipe2.map(async (joueurId) => {
+          const response = await fetch(
+            `http://localhost:3000/user/username/${joueurId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          return data.username;
+        });
+
+        const joueursEquipe1 = await Promise.all(equipe1Promises);
+        const joueursEquipe2 = await Promise.all(equipe2Promises);
+
+        setJoueursEquipe1(joueursEquipe1);
+        setJoueursEquipe2(joueursEquipe2);
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des noms d'utilisateur:",
+          error
+        );
+      }
+    }
+
+    fetchJoueurs();
+  }, [props.equipe1, props.equipe2]);
+
+  const joueur1_gagnant = props.scoreEquipe1 > props.scoreEquipe2;
+
+  const couleurTeam = props.estConfirmé
+    ? joueur1_gagnant
+      ? "bg-blue-500"
+      : "bg-red-500"
+    : "bg-gray-500";
   return (
-    <div className="flex gap-2 justify-center flex-row h-20 w-4/5 rounded-md bg-red-500 items-center max-w-3xl">
-      <div className="w-2/5 flex justify-center">Equipe 1</div>
-      <div className="w-1/5 flex justify-center text-4xl">-</div>
-      <div className="w-2/5 flex justify-center">Equipe 2</div>
+    <div
+      className={`flex gap-2 justify-center flex-row h-20 w-4/5 rounded-md ${couleurTeam} items-center max-w-3xl`}
+    >
+      <div className="w-2/5 flex flex-col justify-center">
+        <div className="flex flex-col gap-2 justify-center items-center">
+          {joueursEquipe1.map((joueur, index) => (
+            <span key={index}>{joueur}</span>
+          ))}
+        </div>
+      </div>
+      <div className="w-1/5 flex flex-row justify-between text-xl">
+        <div className="flex justify-center">{props.scoreEquipe1}</div>
+        <div className="flex justify-center">-</div>
+        <div className="flex justify-center">{props.scoreEquipe2}</div>
+      </div>
+      <div className="w-2/5 flex flex-col justify-center">
+        <div className="flex flex-col gap-2 justify-center items-center">
+          {joueursEquipe2.map((joueur, index) => (
+            <span key={index}>{joueur}</span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
 const Match = () => {
+  const [matches, setMatches] = useState([]);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+
+    // Récupération des données des matchs depuis l'API
+    fetch("http://localhost:3000/match/historique", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setMatches(data))
+      .catch((error) =>
+        console.error("Erreur lors de la récupération des matchs:", error)
+      );
+  }, []);
+
   return (
-    <div className="flex-col my-2 w-full items-center justify-center">
+    <div className="flex-col my-2 w-full items-center justify-center text-white">
       <h1 className="flex justify-center">Match</h1>
       <div className="flex justify-end px-2">
         <a
           href="/ajouter-match"
-          className="fixed bottom-12 right-4 border-2 rounded-xl sm:hidden"
+          className="fixed bottom-12 bg-black right-4 border-2 rounded-xl sm:hidden"
         >
-          <IoIosAdd size="40px" />
+          <IoIosAdd size="40px" color="white" />
         </a>
       </div>
       <div className="flex flex-col gap-4 mt-6 w-full justify-center items-center">
-        <Match_historique matchName="Match 1" />
-        <Match_historique matchName="Match 2" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
-        <Match_historique matchName="Match 3" />
+        {matches.map((match, index) => (
+          <Match_historique
+            key={index}
+            equipe1={match.equipe1}
+            equipe2={match.equipe2}
+            scoreEquipe1={match.scoreEquipe1}
+            scoreEquipe2={match.scoreEquipe2}
+            estConfirmé={match.estConfirmé}
+          />
+        ))}
       </div>
     </div>
   );

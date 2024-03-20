@@ -346,5 +346,20 @@ router.get("/notif", authenticateToken, async (req, res) => {
     res.status(500).send("Erreur lors de la récupération des matchs.");
   }
 });
+router.get("/username/:id", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("username");
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération du nom d'utilisateur.");
+  }
+});
 
 module.exports = router;
