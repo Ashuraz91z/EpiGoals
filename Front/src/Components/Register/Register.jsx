@@ -55,7 +55,7 @@ const Register = () => {
   }`;
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-700 to-purple-500">
+    <div className="flex justify-center items-center h-screen">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white/90 shadow-lg rounded-lg overflow-hidden backdrop-blur-md p-8"
@@ -143,7 +143,7 @@ const Register = () => {
         <div className="flex-col flex">
           <button
             type="submit"
-            className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             S'inscrire
           </button>

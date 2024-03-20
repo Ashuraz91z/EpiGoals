@@ -11,7 +11,7 @@ function Match_historique(props) {
       try {
         const token = Cookies.get("token");
 
-        // Récupération des noms d'utilisateur pour les joueurs de l'équipe 1
+        // Recup User ID pour username Team 1
         const equipe1Promises = props.equipe1.map(async (joueurId) => {
           const response = await fetch(
             `http://localhost:3000/user/username/${joueurId}`,
@@ -26,7 +26,7 @@ function Match_historique(props) {
           return data.username;
         });
 
-        // Récupération des noms d'utilisateur pour les joueurs de l'équipe 2
+        // recup user ID pour username Team 2
         const equipe2Promises = props.equipe2.map(async (joueurId) => {
           const response = await fetch(
             `http://localhost:3000/user/username/${joueurId}`,
