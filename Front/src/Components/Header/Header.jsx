@@ -51,7 +51,7 @@ const Header = () => {
                 value="Ajouter un match"
                 className="input input-bordered w-30 md:w-auto md:p-2"
                 onClick={() => {
-                  window.location.href = "/add-match";
+                  window.location.href = "/ajouter-match";
                 }}
               />
             </div>

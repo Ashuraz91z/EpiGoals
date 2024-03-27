@@ -11,6 +11,7 @@ import Profil from "./Components/Settings/Profil";
 import Classement from "./Components/Classement/Classement";
 import Notifications from "./Components/Notifications/Notifications";
 import Match from "./Components/Match/Match";
+import AjoutMatch from "./Components/Match/AddMatch";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
       <Header />
       <Router>
         <Routes>
+          <Route path="/ajouter-match" element={<AjoutMatch />} />
           <Route path="/match" element={<Match />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/classement" element={<Classement />} />

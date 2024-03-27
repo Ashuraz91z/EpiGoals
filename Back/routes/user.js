@@ -362,4 +362,16 @@ router.get("/username/:id", authenticateToken, async (req, res) => {
   }
 });
 
+router.get("/username", authenticateToken, async (req, res) => {
+  try {
+    const users = await User.find();
+    const usernames = users.map((user) => user.username);
+    res.json(usernames);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des noms d'utilisateur.");
+  }
+});
 module.exports = router;
