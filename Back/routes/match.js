@@ -239,6 +239,34 @@ cron.schedule("0 0 * * *", supprimerMatchsAnciens, {
   timezone: "Europe/Paris",
 });
 
+// router.get("/historique", authenticateToken, async (req, res) => {
+//   const userId = req.user._id.toString();
+//   try {
+//     let matchs = await Match.find({
+//       $or: [{ equipe1: userId }, { equipe2: userId }],
+//       estConfirmé: true,
+//     });
+
+//     matchs = matchs.map((match) => {
+//       const estEquipe1 = match.equipe1
+//         .map((id) => id.toString())
+//         .includes(userId);
+//       const estEquipe2 = match.equipe2
+//         .map((id) => id.toString())
+//         .includes(userId);
+//       const gagne =
+//         (estEquipe1 && match.scoreEquipe1 > match.scoreEquipe2) ||
+//         (estEquipe2 && match.scoreEquipe2 > match.scoreEquipe1);
+
+//       return { ...match.toObject(), resultat: gagne };
+//     });
+
+//     res.json(matchs);
+//   } catch (error) {
+//     res.status(500).send("Erreur lors de la récupération de l'historique.");
+//   }
+// });
+
 router.get("/historique", authenticateToken, async (req, res) => {
   const userId = req.user._id.toString();
   try {
@@ -258,7 +286,11 @@ router.get("/historique", authenticateToken, async (req, res) => {
         (estEquipe1 && match.scoreEquipe1 > match.scoreEquipe2) ||
         (estEquipe2 && match.scoreEquipe2 > match.scoreEquipe1);
 
-      return { ...match.toObject(), resultat: gagne };
+      const aConfirmé = match.confirmations
+        .map((id) => id.toString())
+        .includes(userId);
+
+      return { ...match.toObject(), resultat: gagne, aConfirmé };
     });
 
     res.json(matchs);

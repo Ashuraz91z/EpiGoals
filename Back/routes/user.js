@@ -346,6 +346,7 @@ router.get("/notif", authenticateToken, async (req, res) => {
     res.status(500).send("Erreur lors de la récupération des matchs.");
   }
 });
+
 router.get("/username/:id", authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id;

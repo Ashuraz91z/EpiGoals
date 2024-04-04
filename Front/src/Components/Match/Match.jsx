@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoIosAdd } from "react-icons/io";
+import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 function Match_historique(props) {
@@ -57,13 +58,23 @@ function Match_historique(props) {
     fetchJoueurs();
   }, [props.equipe1, props.equipe2]);
 
-  const joueur1_gagnant = props.scoreEquipe1 > props.scoreEquipe2;
+  const decoded = jwtDecode(Cookies.get("token"));
+
+  const utilisateurDansEquipe1 = props.equipe1.includes(decoded._id);
+  const utilisateurDansEquipe2 = props.equipe2.includes(decoded._id);
+
+  let equipeUtilisateurGagnante = true;
+  if (utilisateurDansEquipe1) {
+    equipeUtilisateurGagnante = props.scoreEquipe1 > props.scoreEquipe2;
+  } else if (utilisateurDansEquipe2) {
+    equipeUtilisateurGagnante = props.scoreEquipe2 > props.scoreEquipe1;
+  }
 
   const couleurTeam = props.estConfirmé
-    ? joueur1_gagnant
+    ? equipeUtilisateurGagnante
       ? "bg-blue-500"
       : "bg-red-500"
-    : "bg-gray-500";
+    : "hidden";
   return (
     <div
       className={`flex gap-2 justify-center flex-row h-20 w-4/5 rounded-md ${couleurTeam} items-center max-w-3xl`}

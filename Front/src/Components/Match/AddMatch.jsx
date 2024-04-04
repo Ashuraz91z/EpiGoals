@@ -128,7 +128,7 @@ const AddMatch = () => {
     <div className="py-2 flex flex-col items-center justify-center">
       <h1>Ajouter un match</h1>
       <div
-        className={`my-4 py-2 flex flex-col items-center border-2 rounded-md w-5/6 ${borderEquipe1}`}
+        className={`my-4 py-2 flex flex-col items-center border-2 rounded-xl w-5/6 ${borderEquipe1}`}
       >
         <h2>Équipe 1</h2>
         <div className="flex flex-col items-center">
@@ -168,7 +168,7 @@ const AddMatch = () => {
       </div>
       <h3>VS</h3>
       <div
-        className={`my-4 py-2 flex flex-col items-center border-2 rounded-md w-5/6 ${borderEquipe2}`}
+        className={`my-4 py-2 flex flex-col items-center border-2 rounded-xl w-5/6 ${borderEquipe2}`}
       >
         <h2>Équipe 2</h2>
         <div className="flex flex-col items-center">
