@@ -6,7 +6,6 @@ import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
 import Test from "./Components/test/test";
 import Header from "./Components/Header/Header";
-import Settings from "./Components/Settings/Settings";
 import Profil from "./Components/Settings/Profil";
 import Classement from "./Components/Classement/Classement";
 import Notifications from "./Components/Notifications/Notifications";
@@ -24,7 +23,6 @@ const App = () => {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/classement" element={<Classement />} />
           <Route path="/profil" element={<Profil />} />
-          <Route path="/settings" element={<Settings />} />
           <Route path="/test" element={<Test />} />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

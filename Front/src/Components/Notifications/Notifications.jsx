@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IoIosAdd } from "react-icons/io";
+import { IoHelp } from "react-icons/io5";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Assurez-vous d'avoir installé jwt-decode
 
@@ -7,6 +7,7 @@ const Notifications = () => {
   const [matchsNonAcceptes, setMatchsNonAcceptes] = useState([]);
   const [userId, setUserId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [Help, setHelp] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -78,13 +79,34 @@ const Notifications = () => {
   return (
     <div className="flex-col my-2 w-full items-center justify-center text-center">
       <h1>Notifications</h1>
+      {Help ? (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-4 rounded-md w-4/5 sm:w-2/5">
+            <h2 className="text-lg font-bold">Aide</h2>
+            <p>
+              Cette page vous permet de voir les matchs auxquels vous avez jouer
+              et que vous n'avez pas encore acceptés. Il faut que le match soit
+              accepté par 3 des 4 joueurs pour qu'il soit validé. Si le match
+              est validé, vous ne pouvez plus le refuser. Si le match ne
+              contient pas le bon score ou les bonnes équipes, vous pouvez le
+              refuser en ne cliquant pas sur le bouton "Accepter".
+            </p>
+            <button
+              onClick={() => setHelp(!Help)}
+              className="bg-black text-white rounded-md p-2 mt-4"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className="flex justify-end px-2">
-        <a
-          href="/ajouter-match"
-          className="fixed bottom-12 bg-black right-4 border-2 rounded-xl sm:hidden"
+        <button
+          onClick={() => setHelp(!Help)}
+          className="fixed bottom-12 bg-black right-4 border-2 rounded-full sm:hidden"
         >
-          <IoIosAdd size="40px" color="white" />
-        </a>
+          <IoHelp size="30px" color="white" />
+        </button>
       </div>
       <div className="flex flex-col gap-4 mt-6 w-full justify-center items-center">
         {isLoading ? (

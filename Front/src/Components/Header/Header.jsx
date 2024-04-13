@@ -64,7 +64,11 @@ const Header = () => {
                 className="btn btn-ghost btn-circle avatar"
               >
                 {profileIcon ? (
-                  <img src={profileIcon} alt="Icône de profil" />
+                  <img
+                    src={profileIcon}
+                    alt="Icône de profil"
+                    style={{ borderRadius: "50%" }}
+                  />
                 ) : (
                   <VscAccount size="40" />
                 )}
@@ -78,9 +82,7 @@ const Header = () => {
                     Profil
                   </a>
                 </li>
-                <li>
-                  <a href="/settings">Réglages</a>
-                </li>
+
                 <li>
                   <a
                     onClick={() => {

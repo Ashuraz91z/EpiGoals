@@ -134,6 +134,9 @@ const Match = () => {
         </a>
       </div>
       <div className="flex flex-col gap-4 mt-6 w-full justify-center items-center">
+        {matches.length === 0 && (
+          <span className="loading loading-infinity loading-lg"></span>
+        )}
         {matches.map((match, index) => (
           <Match_historique
             key={index}
