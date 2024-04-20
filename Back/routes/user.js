@@ -380,4 +380,14 @@ router.get("/username", authenticateToken, async (req, res) => {
       .send("Erreur lors de la récupération des noms d'utilisateur.");
   }
 });
+
+router.get("/classement/epi", authenticateToken, async (req, res) => {
+  try {
+    const users = await User.find().sort({ MMR: -1 });
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération du classement.");
+  }
+});
 module.exports = router;
