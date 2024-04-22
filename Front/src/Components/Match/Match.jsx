@@ -12,6 +12,11 @@ function Match_historique(props) {
       try {
         const token = Cookies.get("token");
 
+        if (!token) {
+          window.location.href("/login");
+          return;
+        }
+
         // Recup User ID pour username Team 1
         const equipe1Promises = props.equipe1.map(async (joueurId) => {
           const response = await fetch(

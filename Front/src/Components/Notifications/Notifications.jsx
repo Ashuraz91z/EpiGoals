@@ -16,7 +16,7 @@ const Notifications = () => {
         const decoded = jwtDecode(token);
         setUserId(decoded._id);
       } catch (error) {
-        console.error("Erreur lors du décodage du token:", error);
+        window.location.href = "/login";
       }
     }
 

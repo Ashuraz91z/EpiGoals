@@ -22,6 +22,7 @@ const Profil = () => {
         const Expire = decodedToken.exp;
         if (Date.now() >= Expire * 1000) {
           Cookies.remove("token");
+          window.location.href = "/login";
           setIsLogged(false);
           return;
         }
