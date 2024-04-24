@@ -285,14 +285,26 @@ router.put("/update", verifyToken, async (req, res) => {
   }
 });
 
-router.post("/forgot-password", (req, res) => {
+router.post("/forgot-password", async (req, res) => {
   const email = req.body.email.toLowerCase();
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send("Utilisateur introuvable.");
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .send("Erreur lors de la recherche de l'utilisateur.");
+  }
 
   const resetToken = jwt.sign({ email }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 
-  const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`; //url mot de passe oublié
+  const resetURL = `http://localhost:5173/reset-password?token=${resetToken}`; //url mot de passe oublié
 
   const mailOptions = {
     from: process.env.EMAIL,
@@ -313,10 +325,18 @@ router.post("/forgot-password", (req, res) => {
 });
 
 router.post("/reset-password", async (req, res) => {
-  const { token, newPassword } = req.body;
+  const { token, newPassword, confirmPassword } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Les mots de passe ne correspondent pas.",
+        });
+    }
 
     if (Date.now() <= decoded.exp * 1000) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -324,13 +344,18 @@ router.post("/reset-password", async (req, res) => {
         { email: decoded.email },
         { password: hashedPassword }
       );
-      res.status(200).send("Mot de passe réinitialisé avec succès.");
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Mot de passe réinitialisé avec succès.",
+        });
     } else {
-      res.status(401).send("Token expiré.");
+      res.status(401).json({ success: false, message: "Token expiré." });
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send("Token invalide.");
+    res.status(400).json({ success: false, message: "Token invalide." });
   }
 });
 
