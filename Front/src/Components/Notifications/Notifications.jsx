@@ -18,6 +18,8 @@ const Notifications = () => {
       } catch (error) {
         window.location.href = "/login";
       }
+    } else {
+      window.location.href = "/login";
     }
 
     // Fonction pour récupérer les matchs non acceptés
@@ -30,7 +32,7 @@ const Notifications = () => {
       }
       try {
         const reponse = await fetch(
-          "fr-game-02.myheberge.com:3000/user/notif",
+          "http://fr-game-02.myheberge.com:3000/user/notif",
           {
             method: "GET",
             headers: {

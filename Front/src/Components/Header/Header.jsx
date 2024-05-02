@@ -19,7 +19,7 @@ const Header = () => {
           setIsLogged(false);
           return;
         }
-        const profileIconUrl = `fr-game-02.myheberge.com:3000/uploads/${userId}.png`;
+        const profileIconUrl = `http://fr-game-02.myheberge.com:3000/uploads/${userId}.png`;
         setProfileIcon(profileIconUrl);
         fetch(profileIconUrl).then((res) => {
           if (res.ok) {
@@ -39,7 +39,7 @@ const Header = () => {
     <div className="flex-col">
       <div className="navbar">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl" href="/classement">
+          <a className="btn btn-ghost text-xl" href="/">
             EpiGoals
           </a>
         </div>

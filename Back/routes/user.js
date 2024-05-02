@@ -330,12 +330,10 @@ router.post("/reset-password", async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (newPassword !== confirmPassword) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Les mots de passe ne correspondent pas.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Les mots de passe ne correspondent pas.",
+      });
     }
 
     if (Date.now() <= decoded.exp * 1000) {
@@ -344,12 +342,10 @@ router.post("/reset-password", async (req, res) => {
         { email: decoded.email },
         { password: hashedPassword }
       );
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Mot de passe réinitialisé avec succès.",
-        });
+      res.status(200).json({
+        success: true,
+        message: "Mot de passe réinitialisé avec succès.",
+      });
     } else {
       res.status(401).json({ success: false, message: "Token expiré." });
     }

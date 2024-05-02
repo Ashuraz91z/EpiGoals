@@ -20,7 +20,7 @@ function Match_historique(props) {
         // Recup User ID pour username Team 1
         const equipe1Promises = props.equipe1.map(async (joueurId) => {
           const response = await fetch(
-            `fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
+            `http://fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
             {
               method: "GET",
               headers: {
@@ -35,7 +35,7 @@ function Match_historique(props) {
         // recup user ID pour username Team 2
         const equipe2Promises = props.equipe2.map(async (joueurId) => {
           const response = await fetch(
-            `fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
+            `http://fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
             {
               method: "GET",
               headers: {

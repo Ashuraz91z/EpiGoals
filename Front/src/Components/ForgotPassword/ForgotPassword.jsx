@@ -10,7 +10,7 @@ const ForgotPassword = () => {
     const emailValue = e.target.email.value;
     setEmail(emailValue);
 
-    fetch("fr-game-02.myheberge.com:3000/user/forgot-password", {
+    fetch("http://fr-game-02.myheberge.com:3000/user/forgot-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

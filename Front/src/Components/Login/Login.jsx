@@ -10,13 +10,16 @@ const Login = () => {
     e.preventDefault();
     setMessage("");
     try {
-      const response = await fetch("fr-game-02.myheberge.com:3000/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "http://fr-game-02.myheberge.com:3000/user/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
       if (!response.ok) {
         throw new Error(
           "Erreur lors de la connexion. Veuillez vérifier vos identifiants."

@@ -16,12 +16,13 @@ const AddMatch = () => {
     const token = Cookies.get("token");
     if (!token) {
       console.error("Token non trouvé, utilisateur non authentifié");
+      window.location.href = "/login";
       return;
     }
 
     try {
       const response = await fetch(
-        "fr-game-02.myheberge.com:3000/match/pre-record-match",
+        "http://fr-game-02.myheberge.com:3000/match/pre-record-match",
         {
           method: "POST",
           headers: {
@@ -67,7 +68,7 @@ const AddMatch = () => {
     const fetchUsernames = async () => {
       try {
         const response = await fetch(
-          "fr-game-02.myheberge.com:3000/user/username",
+          "http://fr-game-02.myheberge.com:3000/user/username",
           {
             headers: {
               Authorization: `Bearer ${token}`,

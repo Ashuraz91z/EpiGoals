@@ -12,7 +12,7 @@ const Classement = () => {
 
       try {
         const response = await fetch(
-          "fr-game-02.myheberge.com:3000/user/classement/epi",
+          "http://fr-game-02.myheberge.com:3000/user/classement/epi",
           {
             headers: {
               Authorization: `Bearer ${token}`,
