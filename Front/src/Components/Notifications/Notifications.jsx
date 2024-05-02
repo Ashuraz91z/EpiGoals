@@ -29,12 +29,15 @@ const Notifications = () => {
         return;
       }
       try {
-        const reponse = await fetch("http://localhost:3000/user/notif", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const reponse = await fetch(
+          "fr-game-02.myheberge.com:3000/user/notif",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (reponse.ok) {
           const matchs = await reponse.json();
           setMatchsNonAcceptes(matchs.filter((match) => !match.estConfirmé));
@@ -58,7 +61,7 @@ const Notifications = () => {
     }
     try {
       const reponse = await fetch(
-        `http://localhost:3000/match/confirm/${idMatch}`,
+        `fr-game-02.myheberge.com:3000/match/confirm/${idMatch}`,
         {
           method: "POST",
           headers: {

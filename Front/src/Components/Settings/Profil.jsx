@@ -27,7 +27,7 @@ const Profil = () => {
           return;
         }
         const userId = decodedToken._id;
-        const profileIconUrl = `http://localhost:3000/uploads/${userId}.png`;
+        const profileIconUrl = `fr-game-02.myheberge.com:3000/uploads/${userId}.png`;
         fetch(profileIconUrl).then((res) => {
           if (res.ok) {
             setProfileIcon(profileIconUrl);
@@ -60,7 +60,7 @@ const Profil = () => {
       return;
     }
 
-    fetch("http://localhost:3000/user/profile-picture", {
+    fetch("fr-game-02.myheberge.com:3000/user/profile-picture", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

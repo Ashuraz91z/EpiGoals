@@ -20,7 +20,7 @@ function Match_historique(props) {
         // Recup User ID pour username Team 1
         const equipe1Promises = props.equipe1.map(async (joueurId) => {
           const response = await fetch(
-            `http://localhost:3000/user/username/${joueurId}`,
+            `fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
             {
               method: "GET",
               headers: {
@@ -35,7 +35,7 @@ function Match_historique(props) {
         // recup user ID pour username Team 2
         const equipe2Promises = props.equipe2.map(async (joueurId) => {
           const response = await fetch(
-            `http://localhost:3000/user/username/${joueurId}`,
+            `fr-game-02.myheberge.com:3000/user/username/${joueurId}`,
             {
               method: "GET",
               headers: {
@@ -109,22 +109,27 @@ function Match_historique(props) {
 
 const Match = () => {
   const [matches, setMatches] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Ajout d'un nouvel état pour le chargement
 
   useEffect(() => {
     const token = Cookies.get("token");
 
     // Récupération des données des matchs depuis l'API
-    fetch("http://localhost:3000/match/historique", {
+    fetch("fr-game-02.myheberge.com:3000/match/historique", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => response.json())
-      .then((data) => setMatches(data))
-      .catch((error) =>
-        console.error("Erreur lors de la récupération des matchs:", error)
-      );
+      .then((data) => {
+        setMatches(data);
+        setIsLoading(false); // Mettre à jour l'état de chargement à false une fois les données chargées
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des matchs:", error);
+        setIsLoading(false); // Assurer de mettre à jour l'état même en cas d'erreur
+      });
   }, []);
 
   return (
@@ -139,19 +144,22 @@ const Match = () => {
         </a>
       </div>
       <div className="flex flex-col gap-4 mt-6 w-full justify-center items-center">
-        {matches.length === 0 && (
+        {isLoading ? (
           <span className="loading loading-infinity loading-lg"></span>
+        ) : matches.length === 0 ? (
+          <p>Aucun match n'a été joué.</p>
+        ) : (
+          matches.map((match, index) => (
+            <Match_historique
+              key={index}
+              equipe1={match.equipe1}
+              equipe2={match.equipe2}
+              scoreEquipe1={match.scoreEquipe1}
+              scoreEquipe2={match.scoreEquipe2}
+              estConfirmé={match.estConfirmé}
+            />
+          ))
         )}
-        {matches.map((match, index) => (
-          <Match_historique
-            key={index}
-            equipe1={match.equipe1}
-            equipe2={match.equipe2}
-            scoreEquipe1={match.scoreEquipe1}
-            scoreEquipe2={match.scoreEquipe2}
-            estConfirmé={match.estConfirmé}
-          />
-        ))}
       </div>
     </div>
   );

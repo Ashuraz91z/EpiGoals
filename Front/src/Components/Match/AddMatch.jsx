@@ -21,7 +21,7 @@ const AddMatch = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/match/pre-record-match",
+        "fr-game-02.myheberge.com:3000/match/pre-record-match",
         {
           method: "POST",
           headers: {
@@ -38,6 +38,14 @@ const AddMatch = () => {
       );
 
       if (response.ok) {
+        setSelectedPlayers({
+          equipe1: ["", ""],
+          equipe2: ["", ""],
+        });
+        setScoreEquipe1(0);
+        setScoreEquipe2(0);
+        setBorderEquipe1("border-white");
+        setBorderEquipe2("border-white");
         console.log("Match enregistré avec succès !");
       } else {
         // Gérer les erreurs de la réponse, par exemple afficher un message d'erreur
@@ -58,11 +66,14 @@ const AddMatch = () => {
 
     const fetchUsernames = async () => {
       try {
-        const response = await fetch("http://localhost:3000/user/username", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          "fr-game-02.myheberge.com:3000/user/username",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setUsernames(data);

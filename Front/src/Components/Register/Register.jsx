@@ -19,19 +19,22 @@ const Register = () => {
     setMessage("");
     const check = isChecked;
     try {
-      const response = await fetch("http://localhost:3000/user/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          username,
-          confirm,
-          check,
-        }),
-      });
+      const response = await fetch(
+        "fr-game-02.myheberge.com:3000/user/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            username,
+            confirm,
+            check,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text(); // Lire le corps de la réponse comme texte brut

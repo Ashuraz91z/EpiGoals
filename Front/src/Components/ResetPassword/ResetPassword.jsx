@@ -13,7 +13,7 @@ const ResetPassword = () => {
     event.preventDefault();
     setIsLoading(true);
 
-    const url = "http://localhost:3000/user/reset-password";
+    const url = "fr-game-02.myheberge.com:3000/user/reset-password";
     const payload = {
       token,
       newPassword: password,

@@ -10,7 +10,7 @@ const Login = () => {
     e.preventDefault();
     setMessage("");
     try {
-      const response = await fetch("http://localhost:3000/user/login", {
+      const response = await fetch("fr-game-02.myheberge.com:3000/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ const Login = () => {
       const data = await response.json();
       if (data) {
         Cookies.set("token", data.token, { expires: 2, path: "/" });
-        window.location.href = "/";
+        window.location.href = "/match";
       }
     } catch (error) {
       setMessage(error.message);
